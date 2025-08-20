@@ -83,22 +83,63 @@ ports:
 ### Xóa dữ liệu và reset
 
 ```bash
-# Dừng và xóa tất cả containers, volumes
-docker-compose down -v
+# Sử dụng management script
+./docker-manage.sh reset
 
-# Xóa images (nếu cần)
+# Hoặc manual
+docker compose down -v
 docker system prune -a
 ```
 
 ### Rebuild container
 
 ```bash
-# Rebuild container web
-docker-compose up -d --build web
+# Sử dụng management script
+./docker-manage.sh rebuild
 
-# Hoặc rebuild tất cả
-docker-compose up -d --build
+# Hoặc manual
+docker compose up -d --build web
 ```
+
+### Debug và logs
+
+```bash
+# Xem logs với management script
+./docker-manage.sh logs
+./docker-manage.sh logs-web
+./docker-manage.sh logs-mysql
+
+# Vào shell containers
+./docker-manage.sh shell-web
+./docker-manage.sh shell-mysql
+```
+
+## Management Script
+
+File `docker-manage.sh` cung cấp các lệnh tiện ích:
+
+```bash
+# Hiển thị help
+./docker-manage.sh help
+
+# Các lệnh chính
+./docker-manage.sh start      # Khởi động
+./docker-manage.sh stop       # Dừng
+./docker-manage.sh restart    # Restart
+./docker-manage.sh status     # Trạng thái
+./docker-manage.sh info       # Thông tin truy cập
+./docker-manage.sh reset      # Reset hoàn toàn
+```
+
+## Environment Configuration
+
+Copy file `.env.example` thành `.env` để tùy chỉnh cấu hình:
+
+```bash
+cp .env.example .env
+```
+
+Sau đó chỉnh sửa `.env` theo nhu cầu và restart containers.
 
 ## Cấu hình
 
