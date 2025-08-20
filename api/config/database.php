@@ -1,12 +1,27 @@
 <?php
 
 class Database {
-    private $host = 'localhost';
-    private $db_name = 'ns_coating';
-    private $username = 'root'; 
-    private $password = '';    
+    private $host;
+    private $db_name;
+    private $username; 
+    private $password;    
     private $charset = 'utf8mb4';
     private $conn = null;
+
+    public function __construct() {
+        // Check if running in Docker environment
+        $this->host = getenv('DB_HOST') ?: 'localhost';
+        $this->db_name = getenv('DB_NAME') ?: 'ns_coating';
+        $this->username = getenv('DB_USER') ?: 'root';
+        $this->password = getenv('DB_PASS') ?: '';
+        
+        // Docker environment detection
+        if (file_exists('/.dockerenv')) {
+            $this->host = 'mysql';
+            $this->username = 'nscoating_user';
+            $this->password = 'nscoating_pass';
+        }
+    }
 
     /**
      * Kết nối database

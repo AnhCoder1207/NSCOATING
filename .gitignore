@@ -7,6 +7,10 @@ assets/js/firebase-config.js
 .env.production
 .env.development
 
+# Docker
+docker-data/
+mysql_data/
+
 # Logs
 *.log
 npm-debug.log*
