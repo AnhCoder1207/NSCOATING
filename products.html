@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm - NS COATING</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts - Inter + Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+
+    
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="assets/css/modern-style.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/auth-cart.css">
+    <link rel="stylesheet" href="assets/css/modal-fix.css">
+    <link rel="stylesheet" href="assets/css/enhancements.css">
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Sản phẩm sơn chất lượng cao - NS COATING. Chuyên cung cấp sơn PU, AC, NC và dung môi cho mọi công trình">
+    <meta name="keywords" content="sơn PU, sơn AC, sơn NC, dung môi, phụ liệu sơn, sản phẩm sơn">
+    <meta name="author" content="NS COATING">
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="Sản Phẩm - NS COATING">
+    <meta property="og:description" content="Khám phá bộ sưu tập sơn chất lượng cao với đa dạng loại và màu sắc">
+    <meta property="og:type" content="website">
+    
+    <!-- Firebase SDK v9 with v8 compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="assets/js/firebase-config.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen hidden">
+        <div class="loader"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="modern-header" id="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                        <span>NS COATING</span>
+                    </a>
+                </div>
+                
+                <!-- Main Navigation -->
+                <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                    <ul>
+                        <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle active" aria-haspopup="true" aria-expanded="false">
+                                Sản Phẩm <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu" role="menu">
+                                <a href="#products" role="menuitem" data-filter="all">Tất cả sản phẩm</a>
+                                <a href="#products" role="menuitem" data-filter="pu">Sơn PU</a>
+                                <a href="#products" role="menuitem" data-filter="ac">Sơn AC</a>
+                                <a href="#products" role="menuitem" data-filter="nc">Sơn NC</a>
+                                <a href="#products" role="menuitem" data-filter="thinner">Dung môi</a>
+                            </div>
+                        </li>
+                        <li><a href="#about" class="nav-link">Giới Thiệu</a></li>
+                        <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm..." data-search="products">
+                        <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    </div>
+                    <button class="action-btn cart-btn" onclick="toggleCart()" aria-label="Mở giỏ hàng">
+                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                        <span class="btn-text">Giỏ hàng</span>
+                        <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+                    </button>
+                    <button class="action-btn login-btn" onclick="toggleLoginModal()" aria-label="Đăng nhập">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        <span class="btn-text">Đăng nhập</span>
+                    </button>
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Mở menu mobile" aria-controls="mobileMenu">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu" role="dialog" aria-labelledby="mobile-menu-title" aria-hidden="true">
+        <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <div class="logo" id="mobile-menu-title">
+                    <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                    <span>NS COATING</span>
+                </div>
+                <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Đóng menu">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            
+            <nav class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+                <ul>
+                    <li>
+                        <a href="index.html" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            Trang Chủ
+                        </a>
+                    </li>
+                    <li class="mobile-dropdown active">
+                        <a href="#" class="mobile-nav-link dropdown-toggle" onclick="event.preventDefault(); toggleMobileDropdown(this);" aria-haspopup="true" aria-expanded="true">
+                            <span>
+                                <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                                Sản Phẩm
+                            </span>
+                            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                        </a>
+                        <div class="mobile-dropdown-menu" role="menu">
+                            <a href="#products" onclick="filterProducts('all'); closeMobileMenu();" role="menuitem">Tất cả sản phẩm</a>
+                            <a href="#products" onclick="filterProducts('pu'); closeMobileMenu();" role="menuitem">Sơn PU</a>
+                            <a href="#products" onclick="filterProducts('ac'); closeMobileMenu();" role="menuitem">Sơn AC</a>
+                            <a href="#products" onclick="filterProducts('nc'); closeMobileMenu();" role="menuitem">Sơn NC</a>
+                            <a href="#products" onclick="filterProducts('thinner'); closeMobileMenu();" role="menuitem">Dung môi</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#about" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            Giới Thiệu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#contact" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-phone" aria-hidden="true"></i>
+                            Liên Hệ
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu-actions">
+                <button class="mobile-action-btn cart-btn" onclick="toggleCart(); closeMobileMenu();">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    Giỏ hàng (<span id="mobileCartCount">0</span>)
+                </button>
+                <button class="mobile-action-btn login-btn" onclick="toggleLoginModal(); closeMobileMenu();">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    Đăng nhập
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- Page Header -->
+        <section class="page-header" aria-labelledby="page-title">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="container">
+                <div class="page-header-content">
+                    <nav class="breadcrumb" aria-label="Breadcrumb">
+                        <a href="index.html">Trang chủ</a>
+                        <span class="breadcrumb-separator" aria-hidden="true">/</span>
+                        <span class="breadcrumb-current">Sản phẩm</span>
+                    </nav>
+                    <h1 class="page-title" id="page-title">Sản Phẩm</h1>
+                    <p class="page-subtitle">
+                        Khám phá bộ sưu tập sơn chất lượng cao với đa dạng loại và màu sắc, 
+                        phù hợp cho mọi nhu cầu trang trí và bảo vệ
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="products-section" id="products" aria-labelledby="products-title">
+            <div class="container">
+                <!-- Section Header -->
+                <div class="section-header">
+                    <h2 class="section-title" id="products-title">Danh Mục Sản Phẩm</h2>
+                    <p class="section-subtitle">
+                        Lựa chọn sản phẩm sơn chất lượng cao phù hợp với nhu cầu của bạn
+                    </p>
+                </div>
+                
+                <!-- Product Stats -->
+                <!-- <div class="product-stats"> 
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="50">0</div>
+                            <div class="stat-label">Sản phẩm</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="4">0</div>
+                            <div class="stat-label">Danh mục</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="100">0</div>
+                            <div class="stat-label">Màu sắc</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="1000">0</div>
+                            <div class="stat-label">Khách hàng</div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Product Filter -->
+                <div class="product-filter">
+                    <div class="filter-header">
+                        <h3>Lọc sản phẩm</h3>
+                        <button class="filter-reset" onclick="resetFilters()">
+                            <i class="fas fa-undo" aria-hidden="true"></i>
+                            Đặt lại
+                        </button>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all" onclick="filterProducts('all')">
+                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                            Tất cả
+                        </button>
+                        <button class="filter-btn" data-filter="pu" onclick="filterProducts('pu')">
+                            <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                            Sơn PU
+                        </button>
+                        <button class="filter-btn" data-filter="ac" onclick="filterProducts('ac')">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                            Sơn AC
+                        </button>
+                        <button class="filter-btn" data-filter="nc" onclick="filterProducts('nc')">
+                            <i class="fas fa-spray-can" aria-hidden="true"></i>
+                            Sơn NC
+                        </button>
+                        <button class="filter-btn" data-filter="thinner" onclick="filterProducts('thinner')">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                            Dung môi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid" id="productGrid">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+
+                <!-- Load More Section -->
+                <div class="load-more-section">
+                    <button class="btn-load-more" onclick="loadMoreProducts()" aria-label="Tải thêm sản phẩm">
+                        <span>Xem thêm sản phẩm</span>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <p class="load-more-info">
+                        Hiển thị <span id="showingCount">12</span> trong tổng số <span id="totalCount">50</span> sản phẩm
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Categories Section -->
+        <section class="categories-section" aria-labelledby="categories-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" id="categories-title">Khám Phá Theo Danh Mục</h2>
+                    <p class="section-subtitle">
+                        Tìm hiểu thêm về các loại sơn và ứng dụng của chúng
+                    </p>
+                </div>
+                
+                <div class="categories-grid">
+                    <div class="category-detail-card">
+                        <div class="category-detail-icon">
+                            <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn PU (Polyurethane)</h3>
+                        <p>Sơn cao cấp với độ bền vượt trội, chống thấm nước tuyệt vời và khả năng chống ăn mòn cao. Thích hợp cho đồ gỗ cao cấp, sàn gỗ và các bề mặt cần độ bền cao.</p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Độ bền cao</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Chống thấm nước</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Bề mặt bóng đẹp</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="filterProducts('pu')">
+                            Xem sản phẩm PU
+                        </button>
+                    </div>
+                    
+                    <div class="category-detail-card">
+                        <div class="category-detail-icon">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn AC (Acrylic)</h3>
+                        <p>Sơn water-based thân thiện với môi trường, khô nhanh và có độ che phủ tốt. Phù hợp cho tường nhà, đồ nội thất và các ứng dụng trang trí.</p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Thân thiện môi trường</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Khô nhanh</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Dễ thi công</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="filterProducts('ac')">
+                            Xem sản phẩm AC
+                        </button>
+                    </div>
+                    
+                    <div class="category-detail-card">
+                        <div class="category-detail-icon">
+                            <i class="fas fa-spray-can" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn NC (Nitrocellulose)</h3>
+                        <p>Sơn với độ bóng cao và màu sắc rực rỡ, thích hợp cho đồ gỗ, kim loại và các sản phẩm cần độ hoàn thiện cao.</p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Độ bóng cao</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Màu sắc đẹp</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Hoàn thiện cao</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="filterProducts('nc')">
+                            Xem sản phẩm NC
+                        </button>
+                    </div>
+                    
+                    <div class="category-detail-card">
+                        <div class="category-detail-icon">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </div>
+                        <h3>Dung Môi</h3>
+                        <p>Các loại dung môi chuyên dụng để pha loãng, làm sạch và tối ưu hóa quá trình thi công sơn. Đảm bảo chất lượng và hiệu quả cao nhất.</p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Chất lượng cao</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Đa dạng loại</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Hiệu quả tối ưu</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="filterProducts('thinner')">
+                            Xem dung môi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" aria-labelledby="faq-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" id="faq-title">Câu Hỏi Thường Gặp</h2>
+                    <p class="section-subtitle">
+                        Các câu hỏi phổ biến về sản phẩm và cách sử dụng
+                    </p>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span>Làm thế nào để chọn loại sơn phù hợp?</span>
+                            <i class="fas fa-chevron-down accordion-icon" aria-hidden="true"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p>Việc chọn sơn phù hợp phụ thuộc vào bề mặt cần sơn, điều kiện môi trường và mục đích sử dụng. Sơn PU thích hợp cho đồ gỗ cao cấp, sơn AC cho tường nhà, sơn NC cho kim loại và đồ nội thất.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span>Cách bảo quản sơn đúng cách?</span>
+                            <i class="fas fa-chevron-down accordion-icon" aria-hidden="true"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p>Sơn nên được bảo quản ở nơi khô ráo, thoáng mát, tránh ánh sáng trực tiếp và nhiệt độ cao. Đậy kín nắp sau khi sử dụng và lắc đều trước khi dùng.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span>Thời gian khô của từng loại sơn?</span>
+                            <i class="fas fa-chevron-down accordion-icon" aria-hidden="true"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p>Sơn AC: 1-2 giờ khô bề mặt, 4-6 giờ khô hoàn toàn. Sơn PU: 2-4 giờ khô bề mặt, 8-12 giờ khô hoàn toàn. Sơn NC: 30-60 phút khô bề mặt, 2-4 giờ khô hoàn toàn.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            <span>Có chính sách đổi trả không?</span>
+                            <i class="fas fa-chevron-down accordion-icon" aria-hidden="true"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <p>Chúng tôi có chính sách đổi trả trong vòng 7 ngày với sản phẩm còn nguyên bao bì, chưa mở nắp. Đối với sản phẩm lỗi do nhà sản xuất, chúng tôi hỗ trợ đổi trả trong 30 ngày.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo">
+                            <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                            <span>NS COATING</span>
+                        </div>
+                        <p>Chuyên cung cấp sơn chất lượng cao cho mọi công trình</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Sản phẩm</h4>
+                    <ul>
+                        <li><a href="#products" onclick="filterProducts('pu')">Sơn PU</a></li>
+                        <li><a href="#products" onclick="filterProducts('ac')">Sơn AC</a></li>
+                        <li><a href="#products" onclick="filterProducts('nc')">Sơn NC</a></li>
+                        <li><a href="#products" onclick="filterProducts('thinner')">Dung môi</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Hỗ trợ</h4>
+                    <ul>
+                        <li><a href="#contact">Liên hệ</a></li>
+                        <li><a href="#">Tư vấn kỹ thuật</a></li>
+                        <li><a href="#">Hướng dẫn sử dụng</a></li>
+                        <li><a href="#">Bảo hành</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Theo dõi chúng tôi</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 NS COATING. Bản quyền thuộc về NS COATING.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal hidden" role="dialog" aria-labelledby="cart-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="toggleCart()"></div>
+        <div class="modal-content cart-modal">
+            <div class="cart-header">
+                <div class="cart-title">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <h3 id="cart-title">Giỏ hàng của bạn</h3>
+                </div>
+                <button class="cart-close-btn" onclick="toggleCart()" aria-label="Đóng giỏ hàng">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            
+            <div class="cart-body">
+                <div id="cartItems" class="cart-items">
+                    <div class="empty-cart" id="emptyCart">
+                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                        <h4>Giỏ hàng trống</h4>
+                        <p>Hãy thêm sản phẩm vào giỏ hàng</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span class="summary-label">Tạm tính:</span>
+                        <span id="subtotalAmount" class="summary-value">0₫</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span class="summary-label">Tổng cộng:</span>
+                        <span id="totalAmount" class="summary-value total-value">0₫</span>
+                    </div>
+                </div>
+                
+                <div class="cart-actions">
+                    <button class="btn-secondary" onclick="window.app?.clearCart()" aria-label="Xóa tất cả sản phẩm">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                        Xóa tất cả
+                    </button>
+                    <button class="btn-primary" onclick="checkout()" aria-label="Thanh toán">
+                        <i class="fas fa-credit-card" aria-hidden="true"></i>
+                        Thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden" role="dialog" aria-labelledby="login-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="toggleLoginModal()"></div>
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h3 id="login-title">
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
+                    Đăng nhập
+                </h3>
+                <button class="close-btn" onclick="toggleLoginModal()" aria-label="Đóng form đăng nhập">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-options">
+                    <button class="btn btn-google" onclick="loginWithGoogle()">
+                        <i class="fab fa-google" aria-hidden="true"></i>
+                        Đăng nhập với Google
+                    </button>
+                    <button class="btn btn-facebook" onclick="loginWithFacebook()">
+                        <i class="fab fa-facebook" aria-hidden="true"></i>
+                        Đăng nhập với Facebook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal hidden" role="dialog" aria-labelledby="product-modal-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="closeProductModal()"></div>
+        <div class="modal-content product-modal">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Chi tiết sản phẩm</h3>
+                <button class="close-btn" onclick="closeProductModal()" aria-label="Đóng chi tiết sản phẩm">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="productModalContent">
+                    <!-- Product details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden" role="alert" aria-live="polite" aria-atomic="true">
+        <div class="toast-content">
+            <i class="toast-icon" aria-hidden="true"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Về đầu trang" style="display: none;">
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Scripts -->
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/modern-app.js"></script>
+    <script src="assets/js/products-modern.js"></script>
+    
+    <script>
+        // Initialize Products App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Products App
+            window.productsApp = new ProductsApp();
+            
+            // Initialize smooth animations
+            initSmoothAnimations();
+        });
+
+        // Initialize Smooth Animations for Products Page
+        function initSmoothAnimations() {
+            // Add loaded class to sections with delay
+            const sections = [
+                { selector: '.page-header', delay: 200 },
+                { selector: '.products-section', delay: 400 },
+                { selector: '.categories-section', delay: 600 },
+                { selector: '.faq-section', delay: 800 }
+            ];
+
+            sections.forEach(({ selector, delay }) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    setTimeout(() => {
+                        element.classList.add('loaded');
+                    }, delay);
+                }
+            });
+
+            // Animate product stats when visible
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statNumbers = entry.target.querySelectorAll('.stat-number');
+                        statNumbers.forEach((stat, index) => {
+                            setTimeout(() => {
+                                animateNumber(stat);
+                            }, index * 100);
+                        });
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            const productStats = document.querySelector('.product-stats');
+            if (productStats) {
+                statsObserver.observe(productStats);
+            }
+        }
+
+        // Animate Numbers
+        function animateNumber(element) {
+            const target = parseInt(element.dataset.count);
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (target === 1000 || target === 100 || target === 50 ? '+' : '');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + (target === 1000 || target === 100 || target === 50 ? '+' : '');
+                }
+            }, 30);
+        }
+
+        // Global functions for Firebase authentication
+        function loginWithGoogle() {
+            if (typeof firebase === 'undefined') {
+                window.app?.showToast('Firebase chưa được tải. Vui lòng thử lại sau.', 'error');
+                return;
+            }
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            firebase.auth().signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+                    window.app?.showToast(`Xin chào ${user.displayName || user.email}!`, 'success');
+                    toggleLoginModal();
+                    updateUserUI(user);
+                })
+                .catch(error => {
+                    console.error("Google login error:", error);
+                    window.app?.showToast(`Lỗi đăng nhập: ${error.message}`, 'error');
+                });
+        }
+
+        function loginWithFacebook() {
+            if (typeof firebase === 'undefined') {
+                window.app?.showToast('Firebase chưa được tải. Vui lòng thử lại sau.', 'error');
+                return;
+            }
+            
+            const provider = new firebase.auth.FacebookAuthProvider();
+            provider.addScope('email');
+            
+            firebase.auth().signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+                    window.app?.showToast(`Xin chào ${user.displayName || user.email}!`, 'success');
+                    toggleLoginModal();
+                    updateUserUI(user);
+                })
+                .catch(error => {
+                    console.error("Facebook login error:", error);
+                    window.app?.showToast(`Lỗi đăng nhập: ${error.message}`, 'error');
+                });
+        }
+
+        function updateUserUI(user) {
+            const loginBtns = document.querySelectorAll('.login-btn');
+            loginBtns.forEach(btn => {
+                if (user) {
+                    btn.innerHTML = `<i class="fas fa-user"></i> <span class="btn-text">${user.displayName || 'User'}</span>`;
+                }
+            });
+        }
+
+        // Initialize Firebase Auth
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkFirebaseLoaded = () => {
+                if (typeof firebase !== 'undefined') {
+                    console.log("Firebase loaded successfully");
+                    firebase.auth().onAuthStateChanged(user => {
+                        if (user) {
+                            updateUserUI(user);
+                            console.log("User is signed in:", user.email);
+                        } else {
+                            console.log("User is signed out");
+                        }
+                    });
+                } else {
+                    console.log("Waiting for Firebase to load...");
+                    setTimeout(checkFirebaseLoaded, 100);
+                }
+            };
+            
+            checkFirebaseLoaded();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!-- SVG placeholder cho sản phẩm sơn PU -->
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="puGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" fill="url(#puGradient)"/>
+  <circle cx="150" cy="120" r="40" fill="white" opacity="0.9"/>
+  <rect x="130" y="140" width="40" height="60" rx="5" fill="white" opacity="0.9"/>
+  <rect x="120" y="200" width="60" height="20" rx="10" fill="white" opacity="0.9"/>
+  <text x="150" y="240" text-anchor="middle" dy=".3em" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">SƠN PU</text>
+  <text x="150" y="260" text-anchor="middle" dy=".3em" fill="white" font-family="Arial, sans-serif" font-size="12">PREMIUM</text>
+</svg>

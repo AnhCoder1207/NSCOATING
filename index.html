@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NS COATING - Sơn chất lượng cao</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts - Inter + Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+
+    
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="assets/css/modern-style.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/auth-cart.css">
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="NS COATING - Chuyên cung cấp sơn PU, AC, NC và phụ liệu chất lượng cao cho mọi công trình">
+    <meta name="keywords" content="sơn PU, sơn AC, sơn NC, dung môi, phụ liệu sơn, NS COATING">
+    <meta name="author" content="NS COATING">
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="NS COATING - Sơn chất lượng cao">
+    <meta property="og:description" content="Chuyên cung cấp sơn PU, AC, NC và phụ liệu chất lượng cao cho mọi công trình">
+    <meta property="og:type" content="website">
+    
+    <!-- Firebase SDK v9 with v8 compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="assets/js/firebase-config.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen hidden">
+        <div class="loader"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="modern-header" id="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <a href="#" class="logo">
+                        <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                        <span>NS COATING</span>
+                    </a>
+                </div>
+                
+                <!-- Main Navigation -->
+                <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                    <ul>
+                        <li><a href="#home" class="nav-link active">Trang Chủ</a></li>
+                        <li class="dropdown">
+                            <a href="#products" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                Sản Phẩm <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu" role="menu">
+                                <a href="products.html" role="menuitem">Tất cả sản phẩm</a>
+                                <a href="products.html#pu" role="menuitem">Sơn PU</a>
+                                <a href="products.html#ac" role="menuitem">Sơn AC</a>
+                                <a href="products.html#nc" role="menuitem">Sơn NC</a>
+                                <a href="products.html#thinner" role="menuitem">Dung môi</a>
+                            </div>
+                        </li>
+                        <li><a href="#about" class="nav-link">Giới Thiệu</a></li>
+                        <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <button class="action-btn cart-btn" onclick="toggleCart()" aria-label="Mở giỏ hàng">
+                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                        <span class="btn-text">Giỏ hàng</span>
+                        <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+                    </button>
+                    <button class="action-btn login-btn" onclick="toggleLoginModal()" aria-label="Đăng nhập">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        <span class="btn-text">Đăng nhập</span>
+                    </button>
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Mở menu mobile" aria-controls="mobileMenu">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu" role="dialog" aria-labelledby="mobile-menu-title" aria-hidden="true">
+        <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <div class="logo" id="mobile-menu-title">
+                    <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                    <span>NS COATING</span>
+                </div>
+                <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Đóng menu">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            
+            <nav class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+                <ul>
+                    <li>
+                        <a href="#home" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            Trang Chủ
+                        </a>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <a href="#" class="mobile-nav-link dropdown-toggle" onclick="event.preventDefault(); toggleMobileDropdown(this);" aria-haspopup="true" aria-expanded="false">
+                            <span>
+                                <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                                Sản Phẩm
+                            </span>
+                            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                        </a>
+                        <div class="mobile-dropdown-menu" role="menu">
+                            <a href="products.html" onclick="closeMobileMenu()" role="menuitem">Tất cả sản phẩm</a>
+                            <a href="products.html#pu" onclick="closeMobileMenu()" role="menuitem">Sơn PU</a>
+                            <a href="products.html#ac" onclick="closeMobileMenu()" role="menuitem">Sơn AC</a>
+                            <a href="products.html#nc" onclick="closeMobileMenu()" role="menuitem">Sơn NC</a>
+                            <a href="products.html#thinner" onclick="closeMobileMenu()" role="menuitem">Dung môi</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#about" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            Giới Thiệu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#contact" class="mobile-nav-link" onclick="closeMobileMenu()">
+                            <i class="fas fa-phone" aria-hidden="true"></i>
+                            Liên Hệ
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu-actions">
+                <button class="mobile-action-btn cart-btn" onclick="toggleCart(); closeMobileMenu();">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    Giỏ hàng (<span id="mobileCartCount">0</span>)
+                </button>
+                <button class="mobile-action-btn login-btn" onclick="toggleLoginModal(); closeMobileMenu();">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    Đăng nhập
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section" id="home" aria-labelledby="hero-title">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title" id="hero-title">
+                        <span class="highlight">NS COATING</span><br>
+                        Sơn chất lượng cao
+                    </h1>
+                    <p class="hero-description">
+                        Chuyên cung cấp sơn PU, AC, NC và phụ liệu chất lượng cao cho mọi công trình. 
+                        Đem đến giải pháp hoàn hảo cho ngôi nhà của bạn.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="products.html" class="btn btn-primary">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                            Xem sản phẩm
+                        </a>
+                        <a href="#contact" class="btn btn-outline">
+                            <i class="fas fa-phone" aria-hidden="true"></i>
+                            Liên hệ ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Preview Section -->
+        <section class="products-preview-section" id="products" aria-labelledby="products-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" id="products-title">Sản phẩm của chúng tôi</h2>
+                    <p class="section-subtitle">
+                        Khám phá bộ sưu tập sơn chất lượng cao với đa dạng loại và màu sắc, 
+                        phù hợp cho mọi nhu cầu trang trí và bảo vệ
+                    </p>
+                </div>
+                
+                <div class="product-categories">
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn PU</h3>
+                        <p>Sơn Polyurethane cao cấp với độ bền vượt trội, chống thấm nước và khả năng chống ăn mòn tuyệt vời</p>
+                        <span class="category-count">5+ sản phẩm</span>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn AC</h3>
+                        <p>Sơn Acrylic chất lượng cao, khô nhanh, màu sắc bền đẹp và thân thiện với môi trường</p>
+                        <span class="category-count">4+ sản phẩm</span>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-spray-can" aria-hidden="true"></i>
+                        </div>
+                        <h3>Sơn NC</h3>
+                        <p>Sơn Nitrocellulose bóng đẹp, màu sắc rực rỡ, lý tưởng cho đồ gỗ và kim loại</p>
+                        <span class="category-count">3+ sản phẩm</span>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </div>
+                        <h3>Dung môi</h3>
+                        <p>Dung môi pha loãng chuyên dụng, đảm bảo chất lượng và hiệu quả thi công tối ưu</p>
+                        <span class="category-count">3+ sản phẩm</span>
+                    </div>
+                </div>
+                
+                <div class="products-cta">
+                    <a href="products.html" class="btn-view-all">
+                        <span>Xem tất cả sản phẩm</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section" id="features" aria-labelledby="features-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" id="features-title">Tại sao chọn NS COATING?</h2>
+                    <p class="section-subtitle">
+                        Chúng tôi cam kết mang đến những sản phẩm và dịch vụ tốt nhất cho khách hàng
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-award" aria-hidden="true"></i>
+                        </div>
+                        <h3>Chất lượng cao</h3>
+                        <p>Sản phẩm đạt chuẩn quốc tế, độ bền cao, được kiểm tra nghiêm ngặt trước khi đến tay khách hàng</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast" aria-hidden="true"></i>
+                        </div>
+                        <h3>Giao hàng nhanh</h3>
+                        <p>Giao hàng trong 24h tại nội thành, 2-3 ngày cho các tỉnh thành khác với đóng gói cẩn thận</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset" aria-hidden="true"></i>
+                        </div>
+                        <h3>Hỗ trợ 24/7</h3>
+                        <p>Đội ngũ tư vấn chuyên nghiệp sẵn sàng hỗ trợ mọi lúc, giải đáp thắc mắc và tư vấn kỹ thuật</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3>Bảo hành uy tín</h3>
+                        <p>Cam kết bảo hành sản phẩm, hỗ trợ kỹ thuật và đổi trả linh hoạt theo chính sách</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i>
+                        </div>
+                        <h3>Giá cả hợp lý</h3>
+                        <p>Giá cả cạnh tranh, nhiều chương trình khuyến mãi hấp dẫn và chính sách giảm giá cho khách hàng thân thiết</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf" aria-hidden="true"></i>
+                        </div>
+                        <h3>Thân thiện môi trường</h3>
+                        <p>Sản phẩm an toàn, ít độc hại, tuân thủ các tiêu chuẩn về bảo vệ môi trường và sức khỏe</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="statistics-section" aria-labelledby="stats-title">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="1000">0</div>
+                        <div class="stat-label">Khách hàng hài lòng</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50">0</div>
+                        <div class="stat-label">Sản phẩm chất lượng</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="5">0</div>
+                        <div class="stat-label">Năm kinh nghiệm</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="24">0</div>
+                        <div class="stat-label">Giờ hỗ trợ/ngày</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section" id="contact" aria-labelledby="contact-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" id="contact-title">Liên hệ với chúng tôi</h2>
+                    <p class="section-subtitle">
+                        Hãy để lại thông tin để được tư vấn miễn phí về sản phẩm phù hợp nhất
+                    </p>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Địa chỉ</h4>
+                                <p>123 Đường ABC, Quận XYZ, TP.HCM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone" aria-hidden="true"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Điện thoại</h4>
+                                <p><a href="tel:+84123456789">+84 123 456 789</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p><a href="mailto:info@nscoating.com">info@nscoating.com</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Giờ làm việc</h4>
+                                <p>Thứ 2 - Thứ 6: 8:00 - 17:00<br>Thứ 7: 8:00 - 12:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form class="contact-form" aria-label="Form liên hệ">
+                        <div class="form-group">
+                            <label for="name">Họ và tên *</label>
+                            <input type="text" id="name" name="name" required aria-required="true">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required aria-required="true">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Tin nhắn *</label>
+                            <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            Gửi tin nhắn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo">
+                            <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                            <span>NS COATING</span>
+                        </div>
+                        <p>Chuyên cung cấp sơn chất lượng cao cho mọi công trình</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Sản phẩm</h4>
+                    <ul>
+                        <li><a href="products.html#pu">Sơn PU</a></li>
+                        <li><a href="products.html#ac">Sơn AC</a></li>
+                        <li><a href="products.html#nc">Sơn NC</a></li>
+                        <li><a href="products.html#thinner">Dung môi</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Hỗ trợ</h4>
+                    <ul>
+                        <li><a href="#contact">Liên hệ</a></li>
+                        <li><a href="#">Tư vấn kỹ thuật</a></li>
+                        <li><a href="#">Hướng dẫn sử dụng</a></li>
+                        <li><a href="#">Bảo hành</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Theo dõi chúng tôi</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 NS COATING. Bản quyền thuộc về NS COATING.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal hidden" role="dialog" aria-labelledby="cart-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="toggleCart()"></div>
+        <div class="modal-content cart-modal">
+            <div class="cart-header">
+                <div class="cart-title">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <h3 id="cart-title">Giỏ hàng của bạn</h3>
+                </div>
+                <button class="cart-close-btn" onclick="toggleCart()" aria-label="Đóng giỏ hàng">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            
+            <div class="cart-body">
+                <div id="cartItems" class="cart-items">
+                    <div class="empty-cart" id="emptyCart">
+                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                        <h4>Giỏ hàng trống</h4>
+                        <p>Hãy thêm sản phẩm vào giỏ hàng</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span class="summary-label">Tạm tính:</span>
+                        <span id="subtotalAmount" class="summary-value">0₫</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span class="summary-label">Tổng cộng:</span>
+                        <span id="totalAmount" class="summary-value total-value">0₫</span>
+                    </div>
+                </div>
+                
+                <div class="cart-actions">
+                    <button class="btn-secondary" onclick="window.app?.clearCart()" aria-label="Xóa tất cả sản phẩm">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                        Xóa tất cả
+                    </button>
+                    <button class="btn-primary" onclick="checkout()" aria-label="Thanh toán">
+                        <i class="fas fa-credit-card" aria-hidden="true"></i>
+                        Thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden" role="dialog" aria-labelledby="login-title" aria-hidden="true">
+        <div class="modal-overlay" onclick="toggleLoginModal()"></div>
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h3 id="login-title">
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
+                    Đăng nhập
+                </h3>
+                <button class="close-btn" onclick="toggleLoginModal()" aria-label="Đóng form đăng nhập">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-options">
+                    <button class="btn btn-google" onclick="loginWithGoogle()">
+                        <i class="fab fa-google" aria-hidden="true"></i>
+                        Đăng nhập với Google
+                    </button>
+                    <button class="btn btn-facebook" onclick="loginWithFacebook()">
+                        <i class="fab fa-facebook" aria-hidden="true"></i>
+                        Đăng nhập với Facebook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden" role="alert" aria-live="polite" aria-atomic="true">
+        <div class="toast-content">
+            <i class="toast-icon" aria-hidden="true"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Về đầu trang" style="display: none;">
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="assets/js/modern-app.js"></script>
+
+    
+    <script>
+        // Simplified initialization without loading screen
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize smooth animations directly
+            initSmoothAnimations();
+        });
+
+        // Initialize Smooth Animations (Replace AOS)
+        function initSmoothAnimations() {
+            // Add loaded class to sections with delay
+            const sections = [
+                { selector: '.hero-section', delay: 200 },
+                { selector: '.products-preview-section', delay: 400 },
+                { selector: '.features-section', delay: 600 },
+                { selector: '.statistics-section', delay: 800 },
+                { selector: '.contact-section', delay: 1000 }
+            ];
+
+            sections.forEach(({ selector, delay }) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    setTimeout(() => {
+                        element.classList.add('loaded');
+                    }, delay);
+                }
+            });
+
+            // Animate category cards
+            setTimeout(() => {
+                const categoryCards = document.querySelectorAll('.category-card');
+                categoryCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                });
+            }, 600);
+
+            // Animate feature cards
+            setTimeout(() => {
+                const featureCards = document.querySelectorAll('.feature-card');
+                featureCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                });
+            }, 800);
+
+            // Animate stats when visible
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statItems = entry.target.querySelectorAll('.stat-item');
+                        statItems.forEach((item, index) => {
+                            setTimeout(() => {
+                                item.classList.add('visible');
+                                // Animate numbers
+                                const statNumber = item.querySelector('.stat-number');
+                                if (statNumber) {
+                                    animateNumber(statNumber);
+                                }
+                            }, index * 100);
+                        });
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            const statsSection = document.querySelector('.statistics-section');
+            if (statsSection) {
+                statsObserver.observe(statsSection);
+            }
+        }
+
+        // Animate Numbers
+        function animateNumber(element) {
+            const target = parseInt(element.dataset.count);
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (target === 24 ? '' : '+');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + (target === 24 ? '' : '+');
+                }
+            }, 30);
+        }
+
+        // Enhanced scroll header effect
+        let lastScrollTop = 0;
+        const header = document.getElementById('header');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Show/hide back to top button with enhanced animation
+            const backToTopBtn = document.getElementById('backToTop');
+            if (scrollTop > 300) {
+                backToTopBtn.classList.add('visible');
+                backToTopBtn.style.display = 'flex';
+            } else {
+                backToTopBtn.classList.remove('visible');
+                setTimeout(() => {
+                    if (!backToTopBtn.classList.contains('visible')) {
+                        backToTopBtn.style.display = 'none';
+                    }
+                }, 300);
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // Enhanced back to top functionality
+        document.getElementById('backToTop').addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Contact form submission
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const message = formData.get('message');
+            
+            // Simulate form submission
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Đã gửi!';
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    this.reset();
+                    showToast('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
+                }, 1000);
+            }, 2000);
+        });
+
+        // Global functions for Firebase authentication
+        function loginWithGoogle() {
+            if (typeof firebase === 'undefined') {
+                showToast('Firebase chưa được tải. Vui lòng thử lại sau.', 'error');
+                return;
+            }
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            firebase.auth().signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+                    showToast(`Xin chào ${user.displayName || user.email}!`, 'success');
+                    toggleLoginModal();
+                    updateUserUI(user);
+                })
+                .catch(error => {
+                    console.error("Google login error:", error);
+                    showToast(`Lỗi đăng nhập: ${error.message}`, 'error');
+                });
+        }
+
+        function loginWithFacebook() {
+            if (typeof firebase === 'undefined') {
+                showToast('Firebase chưa được tải. Vui lòng thử lại sau.', 'error');
+                return;
+            }
+            
+            const provider = new firebase.auth.FacebookAuthProvider();
+            provider.addScope('email');
+            
+            firebase.auth().signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+                    showToast(`Xin chào ${user.displayName || user.email}!`, 'success');
+                    toggleLoginModal();
+                    updateUserUI(user);
+                })
+                .catch(error => {
+                    console.error("Facebook login error:", error);
+                    showToast(`Lỗi đăng nhập: ${error.message}`, 'error');
+                });
+        }
+
+        function updateUserUI(user) {
+            const loginBtns = document.querySelectorAll('.login-btn');
+            loginBtns.forEach(btn => {
+                if (user) {
+                    btn.innerHTML = `<i class="fas fa-user"></i> <span class="btn-text">${user.displayName || 'User'}</span>`;
+                }
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('.toast-icon');
+            const messageEl = toast.querySelector('.toast-message');
+            
+            // Set icon based on type
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            icon.className = `toast-icon ${icons[type] || icons.info}`;
+            messageEl.textContent = message;
+            toast.className = `toast ${type}`;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Global navigation functions
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            if (modal) {
+                const isHidden = modal.classList.contains('hidden');
+                modal.classList.toggle('hidden');
+                modal.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+                
+                if (!isHidden && window.app?.renderCart) {
+                    window.app.renderCart();
+                }
+            }
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                const isHidden = modal.classList.contains('hidden');
+                modal.classList.toggle('hidden');
+                modal.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const body = document.body;
+            
+            if (mobileMenu) {
+                const isActive = mobileMenu.classList.contains('active');
+                mobileMenu.classList.toggle('active');
+                mobileMenu.setAttribute('aria-hidden', isActive ? 'true' : 'false');
+                body.style.overflow = isActive ? 'auto' : 'hidden';
+            }
+        }
+
+        function toggleMobileDropdown(element) {
+            const dropdown = element.closest('.mobile-dropdown');
+            if (dropdown) {
+                // Close other dropdowns
+                document.querySelectorAll('.mobile-dropdown.active').forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current dropdown
+                const isActive = dropdown.classList.contains('active');
+                dropdown.classList.toggle('active');
+                element.setAttribute('aria-expanded', isActive ? 'false' : 'true');
+            }
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu) {
+                mobileMenu.classList.remove('active');
+                mobileMenu.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function checkout() {
+            if (window.app?.cart?.length === 0) {
+                showToast('Giỏ hàng đang trống!', 'error');
+                return;
+            }
+
+            showToast('Đang xử lý đơn hàng...', 'info');
+            
+            setTimeout(() => {
+                const total = window.app?.cart?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0;
+                showToast(`Đặt hàng thành công! Tổng tiền: ${window.app?.formatPrice(total) || '0₫'}`, 'success');
+                window.app?.clearCart();
+                toggleCart();
+            }, 1000);
+        }
+
+        // Initialize Firebase Auth
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkFirebaseLoaded = () => {
+                if (typeof firebase !== 'undefined') {
+                    console.log("Firebase loaded successfully");
+                    firebase.auth().onAuthStateChanged(user => {
+                        if (user) {
+                            updateUserUI(user);
+                            console.log("User is signed in:", user.email);
+                        } else {
+                            console.log("User is signed out");
+                        }
+                    });
+                } else {
+                    console.log("Waiting for Firebase to load...");
+                    setTimeout(checkFirebaseLoaded, 100);
+                }
+            };
+            
+            checkFirebaseLoaded();
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Close all open modals/menus
+                const openModal = document.querySelector('.modal:not(.hidden)');
+                const openMobileMenu = document.querySelector('.mobile-menu.active');
+                
+                if (openModal) {
+                    openModal.classList.add('hidden');
+                    openModal.setAttribute('aria-hidden', 'true');
+                }
+                
+                if (openMobileMenu) {
+                    closeMobileMenu();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
