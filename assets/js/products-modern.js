@@ -11,7 +11,8 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        this.apiBaseUrl = 'api/products'; // API endpoint
+        // Ensure API calls use the same protocol as the current page (HTTPS when page is HTTPS)
+        this.apiBaseUrl = `${window.location.protocol}//${window.location.host}/api/products`;
         
         this.init();
     }
