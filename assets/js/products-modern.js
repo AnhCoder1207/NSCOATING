@@ -12,7 +12,7 @@ class ProductsApp {
         this.totalProducts = 0;
         this.hasMore = false;
         // Simple protocol-relative URL - automatically matches page protocol
-        this.apiBaseUrl = `//${window.location.host}/api/products`;
+        this.apiBaseUrl = `//${window.location.host}/api/products/`;
         
         this.init();
     }
@@ -28,7 +28,9 @@ class ProductsApp {
      * Simple API call - let browser handle protocol
      */
     async apiCall(endpoint, options = {}) {
-        let fullUrl = `${this.apiBaseUrl}${endpoint}`;
+        // Remove leading slash to avoid double slashes
+        const cleanEndpoint = endpoint.replace(/^\//, '');
+        let fullUrl = `${this.apiBaseUrl}${cleanEndpoint}`;
         
         const fetchOptions = {
             ...options,
