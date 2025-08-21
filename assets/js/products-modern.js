@@ -11,7 +11,7 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        // Ensure API calls use the same protocol as the current page (HTTPS when page is HTTPS)
+        // Auto-detect protocol and domain for API calls
         this.apiBaseUrl = `${window.location.protocol}//${window.location.host}/api/products`;
         
         this.init();
@@ -24,6 +24,38 @@ class ProductsApp {
         this.loadStats();
         
         console.log('Products App initialized with MySQL backend');
+        console.log('API Base URL:', this.apiBaseUrl);
+    }
+
+    /**
+     * Safe API call with HTTPS fallback
+     */
+    async apiCall(endpoint, options = {}) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}${endpoint}`, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            // If HTTPS fails and we're not already using HTTPS, try HTTP
+            if (this.apiBaseUrl.startsWith('https:') && !window.location.protocol.startsWith('https:')) {
+                try {
+                    console.log('Trying HTTP fallback...');
+                    const httpUrl = this.apiBaseUrl.replace('https:', 'http:');
+                    const response = await fetch(`${httpUrl}${endpoint}`, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (fallbackError) {
+                    console.error('HTTP fallback also failed:', fallbackError);
+                    throw fallbackError;
+                }
+            }
+            throw error;
+        }
     }
 
     /**
@@ -31,8 +63,7 @@ class ProductsApp {
      */
     async loadCategories() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/categories`);
-            const result = await response.json();
+            const result = await this.apiCall('/categories');
             
             if (result.success) {
                 this.categories = result.data;
@@ -66,8 +97,7 @@ class ProductsApp {
                 sort: 'newest'
             });
 
-            const response = await fetch(`${this.apiBaseUrl}?${params}`);
-            const result = await response.json();
+            const result = await this.apiCall(`?${params}`);
             
             if (result.success) {
                 const { products, pagination } = result.data;
@@ -105,8 +135,7 @@ class ProductsApp {
      */
     async loadStats() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/stats`);
-            const result = await response.json();
+            const result = await this.apiCall('/stats');
             
             if (result.success) {
                 this.updateStatsDisplay(result.data);
