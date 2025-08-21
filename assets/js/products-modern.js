@@ -12,7 +12,12 @@ class ProductsApp {
         this.totalProducts = 0;
         this.hasMore = false;
         // Auto-detect protocol and domain for API calls
-        this.apiBaseUrl = `${window.location.protocol}//${window.location.host}/api/products`;
+        // Force HTTPS if page is served over HTTPS or if hostname suggests production
+        const useHttps = window.location.protocol === 'https:' || 
+                        window.location.hostname.includes('nscoating.vn') ||
+                        window.location.hostname.includes('www.');
+        const protocol = useHttps ? 'https:' : window.location.protocol;
+        this.apiBaseUrl = `${protocol}//${window.location.host}/api/products`;
         
         this.init();
     }
@@ -28,7 +33,7 @@ class ProductsApp {
     }
 
     /**
-     * Safe API call with HTTPS fallback
+     * Safe API call with protocol fallback
      */
     async apiCall(endpoint, options = {}) {
         try {
@@ -39,23 +44,44 @@ class ProductsApp {
             return await response.json();
         } catch (error) {
             console.error('API call failed:', error);
-            // If HTTPS fails and we're not already using HTTPS, try HTTP
-            if (this.apiBaseUrl.startsWith('https:') && !window.location.protocol.startsWith('https:')) {
-                try {
-                    console.log('Trying HTTP fallback...');
-                    const httpUrl = this.apiBaseUrl.replace('https:', 'http:');
-                    const response = await fetch(`${httpUrl}${endpoint}`, options);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return await response.json();
-                } catch (fallbackError) {
-                    console.error('HTTP fallback also failed:', fallbackError);
-                    throw fallbackError;
-                }
+            
+            // Try alternative protocol if current one fails
+            let fallbackUrl;
+            if (this.apiBaseUrl.startsWith('https:')) {
+                // If HTTPS fails, try HTTP (for local development)
+                fallbackUrl = this.apiBaseUrl.replace('https:', 'http:');
+                console.log('Trying HTTP fallback...');
+            } else {
+                // If HTTP fails, try HTTPS (for production)
+                fallbackUrl = this.apiBaseUrl.replace('http:', 'https:');
+                console.log('Trying HTTPS fallback...');
             }
-            throw error;
+            
+            try {
+                const response = await fetch(`${fallbackUrl}${endpoint}`, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                // Update API base URL if fallback works
+                this.apiBaseUrl = fallbackUrl;
+                console.log('Fallback successful, updated API URL to:', this.apiBaseUrl);
+                return await response.json();
+            } catch (fallbackError) {
+                console.error('Fallback also failed:', fallbackError);
+                throw error; // Throw original error
+            }
         }
+    }
+
+    /**
+     * Get API URL with same protocol detection logic
+     */
+    getApiUrl(path) {
+        const useHttps = window.location.protocol === 'https:' || 
+                        window.location.hostname.includes('nscoating.vn') ||
+                        window.location.hostname.includes('www.');
+        const protocol = useHttps ? 'https:' : window.location.protocol;
+        return `${protocol}//${window.location.host}/api/products/${path}`;
     }
 
     /**
@@ -625,8 +651,9 @@ async function showProductModal(productId) {
         modal.classList.remove('hidden');
         modal.setAttribute('aria-hidden', 'false');
         
-        // Fetch product details from API
-        const response = await fetch(`api/products/detail.php?id=${productId}`);
+        // Fetch product details from API using detail endpoint
+        const detailUrl = window.productsApp.getApiUrl(`detail.php?id=${productId}`);
+        const response = await fetch(detailUrl);
         const result = await response.json();
         
         if (!result.success) {
