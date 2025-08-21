@@ -11,23 +11,8 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        // FORCE HTTPS for production domain - Cloudflare Tunnel compatibility
-        let protocol = 'https:'; // Always use HTTPS with Cloudflare
-        
-        // Only use HTTP for localhost development
-        if (window.location.hostname === 'localhost' || 
-            window.location.hostname === '127.0.0.1' ||
-            window.location.hostname.includes('local')) {
-            protocol = window.location.protocol;
-        }
-        
-        this.apiBaseUrl = `${protocol}//${window.location.host}/api/products`;
-        
-        console.log('☁️ Cloudflare-aware setup');
-        console.log('🌐 Current location:', window.location.href);
-        console.log('🔒 Protocol detected:', window.location.protocol);
-        console.log('🏠 Hostname:', window.location.hostname);
-        console.log('🚀 API Base URL:', this.apiBaseUrl);
+        // Simple protocol-relative URL - automatically matches page protocol
+        this.apiBaseUrl = `//${window.location.host}/api/products`;
         
         this.init();
     }
@@ -37,41 +22,19 @@ class ProductsApp {
         this.loadCategories();
         this.loadProducts();
         this.loadStats();
-        
-        console.log('🚀 Products App initialized with MySQL backend');
-        console.log('🔗 Final API Base URL:', this.apiBaseUrl);
-        
-        // Validate HTTPS usage on production
-        if (window.location.hostname.includes('nscoating.vn') && !this.apiBaseUrl.startsWith('https:')) {
-            console.error('🚨 WARNING: Production site should use HTTPS!');
-            // Force fix
-            this.apiBaseUrl = this.apiBaseUrl.replace('http:', 'https:');
-            console.log('🔧 Auto-corrected to HTTPS:', this.apiBaseUrl);
-        }
     }
 
     /**
-     * Safe API call with Cloudflare Tunnel compatibility
+     * Simple API call - let browser handle protocol
      */
     async apiCall(endpoint, options = {}) {
         let fullUrl = `${this.apiBaseUrl}${endpoint}`;
         
-        // Add trailing slash if missing and no query params for main endpoint
-        if (endpoint === '' || endpoint === '/') {
-            fullUrl = `${this.apiBaseUrl}/`;
-        }
-        
-        console.log('📞 API Call:', fullUrl);
-        
-        // Cloudflare-friendly fetch options
         const fetchOptions = {
             ...options,
-            redirect: 'follow',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-                'CF-Connecting-IP': window.location.hostname, // Cloudflare header
                 ...options.headers
             }
         };
@@ -82,64 +45,18 @@ class ProductsApp {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            console.log('✅ API Call successful');
+            
             return await response.json();
         } catch (error) {
-            console.error('❌ API call failed:', error);
-            console.error('🔍 Failed URL:', fullUrl);
-            
-            // Try with trailing slash if not already present
-            if (!fullUrl.endsWith('/') && !fullUrl.includes('?')) {
-                try {
-                    const slashUrl = fullUrl + '/';
-                    console.log('🔄 Trying with trailing slash:', slashUrl);
-                    const response = await fetch(slashUrl, fetchOptions);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    console.log('✅ Trailing slash worked!');
-                    return await response.json();
-                } catch (slashError) {
-                    console.error('❌ Trailing slash also failed:', slashError);
-                }
-            }
-            
-            // Try different endpoint format for Cloudflare
-            try {
-                const cfUrl = fullUrl.replace('/api/products', '/api/products/index.php');
-                console.log('☁️ Trying Cloudflare-friendly URL:', cfUrl);
-                const response = await fetch(cfUrl, fetchOptions);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                console.log('✅ Cloudflare URL worked!');
-                // Update base URL for future calls
-                this.apiBaseUrl = this.apiBaseUrl.replace('/api/products', '/api/products/index.php').replace('index.php', '').replace('//', '/');
-                return await response.json();
-            } catch (cfError) {
-                console.error('❌ Cloudflare URL also failed:', cfError);
-            }
-            
             throw error;
         }
     }
 
     /**
-     * Get API URL with Cloudflare Tunnel compatibility
+     * Get API URL - simple version
      */
     getApiUrl(path) {
-        let protocol = 'https:'; // Always HTTPS with Cloudflare
-        
-        // Only use HTTP for localhost
-        if (window.location.hostname === 'localhost' || 
-            window.location.hostname === '127.0.0.1' ||
-            window.location.hostname.includes('local')) {
-            protocol = window.location.protocol;
-        }
-        
-        const url = `${protocol}//${window.location.host}/api/products/${path}`;
-        console.log('🔗 Generated API URL:', url);
-        return url;
+        return `//${window.location.host}/api/products/${path}`;
     }
 
     /**
@@ -151,11 +68,9 @@ class ProductsApp {
             
             if (result.success) {
                 this.categories = result.data;
-            } else {
-                console.error('Failed to load categories:', result.error);
             }
         } catch (error) {
-            console.error('Error loading categories:', error);
+            // Silent fail for categories
         }
     }
 
@@ -203,11 +118,9 @@ class ProductsApp {
                 this.updateShowingCount();
                 
             } else {
-                console.error('Failed to load products:', result.error);
                 this.showErrorState(result.error);
             }
         } catch (error) {
-            console.error('Error loading products:', error);
             this.showErrorState('Không thể tải danh sách sản phẩm. Vui lòng thử lại.');
         } finally {
             this.isLoading = false;
@@ -225,7 +138,7 @@ class ProductsApp {
                 this.updateStatsDisplay(result.data);
             }
         } catch (error) {
-            console.error('Error loading stats:', error);
+            // Silent fail for stats
         }
     }
 
@@ -712,13 +625,6 @@ async function showProductModal(productId) {
         // Fetch product details from API using detail endpoint
         let detailUrl = window.productsApp.getApiUrl(`detail.php?id=${productId}`);
         
-        // Emergency HTTPS fix for production
-        if (window.location.hostname.includes('nscoating.vn') && detailUrl.startsWith('http:')) {
-            detailUrl = detailUrl.replace('http:', 'https:');
-            console.log('🔧 Emergency HTTPS fix for detail URL:', detailUrl);
-        }
-        
-        console.log('📞 Fetching product detail:', detailUrl);
         const response = await fetch(detailUrl);
         const result = await response.json();
         
@@ -824,8 +730,6 @@ async function showProductModal(productId) {
         }
 
     } catch (error) {
-        console.error('Error loading product details:', error);
-        
         const modalContent = document.getElementById('productModalContent');
         if (modalContent) {
             modalContent.innerHTML = `
