@@ -11,8 +11,8 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        // Simple protocol-relative URL - automatically matches page protocol
-        this.apiBaseUrl = `//${window.location.host}/api/products/`;
+        // Force HTTPS for API calls to prevent Mixed Content errors
+        this.apiBaseUrl = `https://${window.location.host}/api/products/`;
         
         this.init();
     }
@@ -55,10 +55,10 @@ class ProductsApp {
     }
 
     /**
-     * Get API URL - simple version
+     * Get API URL - force HTTPS
      */
     getApiUrl(path) {
-        return `//${window.location.host}/api/products/${path}`;
+        return `https://${window.location.host}/api/products/${path}`;
     }
 
     /**
