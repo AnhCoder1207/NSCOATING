@@ -18,9 +18,9 @@
 
     
     <!-- Modern CSS -->
-    <link rel="stylesheet" href="assets/css/modern-style.css">
+    <link rel="stylesheet" href="assets/css/modern-style.css?v=2">
     <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/auth-cart.css">
+    <link rel="stylesheet" href="assets/css/auth-cart.css?v=2">
     <link rel="stylesheet" href="assets/css/modal-fix.css">
     <link rel="stylesheet" href="assets/css/enhancements.css">
     
@@ -591,6 +591,11 @@
             
             // Initialize smooth animations
             initSmoothAnimations();
+            
+            // Test accordion immediately
+            console.log('Testing accordion...');
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            console.log('Found accordion items:', accordionItems.length);
         });
 
         // Initialize Smooth Animations for Products Page
