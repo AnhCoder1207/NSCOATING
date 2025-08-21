@@ -4,19 +4,20 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Force HTTPS redirect (uncomment if needed)
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # Force HTTPS redirect (disabled for Cloudflare Tunnel)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Handle preflight OPTIONS requests
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ $1 [R=200,L]
 
-    # API routing
+    # API routing - order matters!
     RewriteRule ^api/products/categories/?$ api/products/index.php?path=/categories [L,QSA]
     RewriteRule ^api/products/stats/?$ api/products/index.php?path=/stats [L,QSA]
+    RewriteRule ^api/products/detail\.php$ api/products/detail.php [L,QSA]
     RewriteRule ^api/products/([0-9]+)/?$ api/products/index.php?path=/$1 [L,QSA]
-    RewriteRule ^api/products/?$ api/products/index.php [L,QSA]
+    RewriteRule ^api/products/?(.*)$ api/products/index.php [L,QSA]
 </IfModule>
 
 # Security headers
