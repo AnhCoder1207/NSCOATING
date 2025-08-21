@@ -11,18 +11,19 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        // FORCE HTTPS for production domain - no more mixed content!
-        let protocol = window.location.protocol;
+        // FORCE HTTPS for production domain - Cloudflare Tunnel compatibility
+        let protocol = 'https:'; // Always use HTTPS with Cloudflare
         
-        // Force HTTPS for nscoating.vn domain or if page is already HTTPS
-        if (window.location.hostname.includes('nscoating.vn') || 
-            window.location.hostname.includes('www.') || 
-            window.location.protocol === 'https:') {
-            protocol = 'https:';
+        // Only use HTTP for localhost development
+        if (window.location.hostname === 'localhost' || 
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname.includes('local')) {
+            protocol = window.location.protocol;
         }
         
         this.apiBaseUrl = `${protocol}//${window.location.host}/api/products`;
         
+        console.log('☁️ Cloudflare-aware setup');
         console.log('🌐 Current location:', window.location.href);
         console.log('🔒 Protocol detected:', window.location.protocol);
         console.log('🏠 Hostname:', window.location.hostname);
@@ -50,14 +51,34 @@ class ProductsApp {
     }
 
     /**
-     * Safe API call with protocol fallback
+     * Safe API call with Cloudflare Tunnel compatibility
      */
     async apiCall(endpoint, options = {}) {
-        const fullUrl = `${this.apiBaseUrl}${endpoint}`;
+        let fullUrl = `${this.apiBaseUrl}${endpoint}`;
+        
+        // Add trailing slash if missing and no query params for main endpoint
+        if (endpoint === '' || endpoint === '/') {
+            fullUrl = `${this.apiBaseUrl}/`;
+        }
+        
         console.log('📞 API Call:', fullUrl);
         
+        // Cloudflare-friendly fetch options
+        const fetchOptions = {
+            ...options,
+            redirect: 'follow',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+                'CF-Connecting-IP': window.location.hostname, // Cloudflare header
+                ...options.headers
+            }
+        };
+        
         try {
-            const response = await fetch(fullUrl, options);
+            const response = await fetch(fullUrl, fetchOptions);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -67,30 +88,36 @@ class ProductsApp {
             console.error('❌ API call failed:', error);
             console.error('🔍 Failed URL:', fullUrl);
             
-            // Only try fallback for localhost or development
-            if (!window.location.hostname.includes('nscoating.vn')) {
-                let fallbackUrl;
-                if (this.apiBaseUrl.startsWith('https:')) {
-                    fallbackUrl = this.apiBaseUrl.replace('https:', 'http:');
-                    console.log('🔄 Trying HTTP fallback for localhost...');
-                } else {
-                    fallbackUrl = this.apiBaseUrl.replace('http:', 'https:');
-                    console.log('🔄 Trying HTTPS fallback...');
-                }
-                
+            // Try with trailing slash if not already present
+            if (!fullUrl.endsWith('/') && !fullUrl.includes('?')) {
                 try {
-                    const fallbackFullUrl = `${fallbackUrl}${endpoint}`;
-                    console.log('🔄 Fallback URL:', fallbackFullUrl);
-                    const response = await fetch(fallbackFullUrl, options);
+                    const slashUrl = fullUrl + '/';
+                    console.log('🔄 Trying with trailing slash:', slashUrl);
+                    const response = await fetch(slashUrl, fetchOptions);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    this.apiBaseUrl = fallbackUrl;
-                    console.log('✅ Fallback successful, updated API URL to:', this.apiBaseUrl);
+                    console.log('✅ Trailing slash worked!');
                     return await response.json();
-                } catch (fallbackError) {
-                    console.error('❌ Fallback also failed:', fallbackError);
+                } catch (slashError) {
+                    console.error('❌ Trailing slash also failed:', slashError);
                 }
+            }
+            
+            // Try different endpoint format for Cloudflare
+            try {
+                const cfUrl = fullUrl.replace('/api/products', '/api/products/index.php');
+                console.log('☁️ Trying Cloudflare-friendly URL:', cfUrl);
+                const response = await fetch(cfUrl, fetchOptions);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                console.log('✅ Cloudflare URL worked!');
+                // Update base URL for future calls
+                this.apiBaseUrl = this.apiBaseUrl.replace('/api/products', '/api/products/index.php').replace('index.php', '').replace('//', '/');
+                return await response.json();
+            } catch (cfError) {
+                console.error('❌ Cloudflare URL also failed:', cfError);
             }
             
             throw error;
@@ -98,16 +125,16 @@ class ProductsApp {
     }
 
     /**
-     * Get API URL with same protocol detection logic
+     * Get API URL with Cloudflare Tunnel compatibility
      */
     getApiUrl(path) {
-        let protocol = window.location.protocol;
+        let protocol = 'https:'; // Always HTTPS with Cloudflare
         
-        // Force HTTPS for nscoating.vn domain or if page is already HTTPS
-        if (window.location.hostname.includes('nscoating.vn') || 
-            window.location.hostname.includes('www.') || 
-            window.location.protocol === 'https:') {
-            protocol = 'https:';
+        // Only use HTTP for localhost
+        if (window.location.hostname === 'localhost' || 
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname.includes('local')) {
+            protocol = window.location.protocol;
         }
         
         const url = `${protocol}//${window.location.host}/api/products/${path}`;
