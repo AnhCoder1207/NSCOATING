@@ -11,13 +11,22 @@ class ProductsApp {
         this.searchQuery = '';
         this.totalProducts = 0;
         this.hasMore = false;
-        // Auto-detect protocol and domain for API calls
-        // Force HTTPS if page is served over HTTPS or if hostname suggests production
-        const useHttps = window.location.protocol === 'https:' || 
-                        window.location.hostname.includes('nscoating.vn') ||
-                        window.location.hostname.includes('www.');
-        const protocol = useHttps ? 'https:' : window.location.protocol;
+        // FORCE HTTPS for production domain - no more mixed content!
+        let protocol = window.location.protocol;
+        
+        // Force HTTPS for nscoating.vn domain or if page is already HTTPS
+        if (window.location.hostname.includes('nscoating.vn') || 
+            window.location.hostname.includes('www.') || 
+            window.location.protocol === 'https:') {
+            protocol = 'https:';
+        }
+        
         this.apiBaseUrl = `${protocol}//${window.location.host}/api/products`;
+        
+        console.log('🌐 Current location:', window.location.href);
+        console.log('🔒 Protocol detected:', window.location.protocol);
+        console.log('🏠 Hostname:', window.location.hostname);
+        console.log('🚀 API Base URL:', this.apiBaseUrl);
         
         this.init();
     }
@@ -28,48 +37,63 @@ class ProductsApp {
         this.loadProducts();
         this.loadStats();
         
-        console.log('Products App initialized with MySQL backend');
-        console.log('API Base URL:', this.apiBaseUrl);
+        console.log('🚀 Products App initialized with MySQL backend');
+        console.log('🔗 Final API Base URL:', this.apiBaseUrl);
+        
+        // Validate HTTPS usage on production
+        if (window.location.hostname.includes('nscoating.vn') && !this.apiBaseUrl.startsWith('https:')) {
+            console.error('🚨 WARNING: Production site should use HTTPS!');
+            // Force fix
+            this.apiBaseUrl = this.apiBaseUrl.replace('http:', 'https:');
+            console.log('🔧 Auto-corrected to HTTPS:', this.apiBaseUrl);
+        }
     }
 
     /**
      * Safe API call with protocol fallback
      */
     async apiCall(endpoint, options = {}) {
+        const fullUrl = `${this.apiBaseUrl}${endpoint}`;
+        console.log('📞 API Call:', fullUrl);
+        
         try {
-            const response = await fetch(`${this.apiBaseUrl}${endpoint}`, options);
+            const response = await fetch(fullUrl, options);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            console.log('✅ API Call successful');
             return await response.json();
         } catch (error) {
-            console.error('API call failed:', error);
+            console.error('❌ API call failed:', error);
+            console.error('🔍 Failed URL:', fullUrl);
             
-            // Try alternative protocol if current one fails
-            let fallbackUrl;
-            if (this.apiBaseUrl.startsWith('https:')) {
-                // If HTTPS fails, try HTTP (for local development)
-                fallbackUrl = this.apiBaseUrl.replace('https:', 'http:');
-                console.log('Trying HTTP fallback...');
-            } else {
-                // If HTTP fails, try HTTPS (for production)
-                fallbackUrl = this.apiBaseUrl.replace('http:', 'https:');
-                console.log('Trying HTTPS fallback...');
-            }
-            
-            try {
-                const response = await fetch(`${fallbackUrl}${endpoint}`, options);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            // Only try fallback for localhost or development
+            if (!window.location.hostname.includes('nscoating.vn')) {
+                let fallbackUrl;
+                if (this.apiBaseUrl.startsWith('https:')) {
+                    fallbackUrl = this.apiBaseUrl.replace('https:', 'http:');
+                    console.log('🔄 Trying HTTP fallback for localhost...');
+                } else {
+                    fallbackUrl = this.apiBaseUrl.replace('http:', 'https:');
+                    console.log('🔄 Trying HTTPS fallback...');
                 }
-                // Update API base URL if fallback works
-                this.apiBaseUrl = fallbackUrl;
-                console.log('Fallback successful, updated API URL to:', this.apiBaseUrl);
-                return await response.json();
-            } catch (fallbackError) {
-                console.error('Fallback also failed:', fallbackError);
-                throw error; // Throw original error
+                
+                try {
+                    const fallbackFullUrl = `${fallbackUrl}${endpoint}`;
+                    console.log('🔄 Fallback URL:', fallbackFullUrl);
+                    const response = await fetch(fallbackFullUrl, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    this.apiBaseUrl = fallbackUrl;
+                    console.log('✅ Fallback successful, updated API URL to:', this.apiBaseUrl);
+                    return await response.json();
+                } catch (fallbackError) {
+                    console.error('❌ Fallback also failed:', fallbackError);
+                }
             }
+            
+            throw error;
         }
     }
 
@@ -77,11 +101,18 @@ class ProductsApp {
      * Get API URL with same protocol detection logic
      */
     getApiUrl(path) {
-        const useHttps = window.location.protocol === 'https:' || 
-                        window.location.hostname.includes('nscoating.vn') ||
-                        window.location.hostname.includes('www.');
-        const protocol = useHttps ? 'https:' : window.location.protocol;
-        return `${protocol}//${window.location.host}/api/products/${path}`;
+        let protocol = window.location.protocol;
+        
+        // Force HTTPS for nscoating.vn domain or if page is already HTTPS
+        if (window.location.hostname.includes('nscoating.vn') || 
+            window.location.hostname.includes('www.') || 
+            window.location.protocol === 'https:') {
+            protocol = 'https:';
+        }
+        
+        const url = `${protocol}//${window.location.host}/api/products/${path}`;
+        console.log('🔗 Generated API URL:', url);
+        return url;
     }
 
     /**
@@ -652,7 +683,15 @@ async function showProductModal(productId) {
         modal.setAttribute('aria-hidden', 'false');
         
         // Fetch product details from API using detail endpoint
-        const detailUrl = window.productsApp.getApiUrl(`detail.php?id=${productId}`);
+        let detailUrl = window.productsApp.getApiUrl(`detail.php?id=${productId}`);
+        
+        // Emergency HTTPS fix for production
+        if (window.location.hostname.includes('nscoating.vn') && detailUrl.startsWith('http:')) {
+            detailUrl = detailUrl.replace('http:', 'https:');
+            console.log('🔧 Emergency HTTPS fix for detail URL:', detailUrl);
+        }
+        
+        console.log('📞 Fetching product detail:', detailUrl);
         const response = await fetch(detailUrl);
         const result = await response.json();
         
